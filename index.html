@@ -3,120 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>شعاع الأنوار - إدارة المنتجات</title>
+  <title>شعاع الأنوار</title>
   <style>
-    :root {
-      --primary: #d4af37;
-      --bg: #121212;
-      --card-bg: #1e1e1e;
-      --text: #ffffff;
-      --green: #25d366;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 15px; }
-    
-    .header { text-align: center; margin-bottom: 20px; padding: 10px; border-bottom: 2px solid var(--primary); }
-    .header h1 { color: var(--primary); font-size: 22px; }
-
-    .form-card { background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-    .form-card h2 { font-size: 16px; margin-bottom: 10px; color: #ccc; }
-    
-    input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 14px; }
-    input:focus { border-color: var(--primary); outline: none; }
-
-    .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
-    .btn-add { background: var(--primary); color: #000; margin-top: 5px; }
-    .btn-wa { background: var(--green); color: #fff; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-
-    .products-list { display: flex; flex-direction: column; gap: 15px; }
-    .product-card { background: var(--card-bg); border-radius: 12px; padding: 15px; border-right: 4px solid var(--primary); position: relative; }
-    .product-title { font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 5px; }
-    .product-price { font-size: 16px; color: var(--primary); font-weight: bold; margin-bottom: 8px; }
-    .product-desc { font-size: 13px; color: #aaa; margin-bottom: 12px; white-space: pre-line; }
-
-    .btn-delete { background: #ff4d4d; color: white; padding: 5px 10px; border-radius: 6px; font-size: 12px; border: none; float: left; }
+    body { background: #121212; color: #fff; font-family: sans-serif; padding: 20px; text-align: center; }
+    input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; border: none; }
+    button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; background: #d4af37; font-weight: bold; }
+    .wa-btn { background: #25d366; color: white; }
+    .product-card { background: #1e1e1e; padding: 15px; margin: 10px 0; border-radius: 8px; border-right: 4px solid #d4af37; text-align: right; }
   </style>
 </head>
 <body>
-
-  <div class="header">
-    <h1>شعاع الأنوار</h1>
-    <p style="font-size: 12px; color: #888;">نظام إدارة ومشاركة المنتجات</p>
-  </div>
-
-  <div class="form-card">
-    <h2>إضافة منتج جديد</h2>
-    <input type="text" id="pName" placeholder="اسم المنتج">
-    <input type="text" id="pPrice" placeholder="السعر (مثال: 50$ أو 5000 ريال)">
-    <textarea id="pDesc" rows="3" placeholder="تفاصيل أو ملاحظات عن المنتج"></textarea>
-    <button class="btn btn-add" onclick="addProduct()">حفظ المنتج</button>
-  </div>
-
-  <div class="products-list" id="productList"></div>
+  <h1>شعاع الأنوار</h1>
+  <input type="text" id="name" placeholder="اسم المنتج">
+  <input type="text" id="price" placeholder="السعر">
+  <button onclick="add()">إضافة منتج</button>
+  <div id="list"></div>
 
   <script>
-    let products = JSON.parse(localStorage.getItem('shuaa_products')) || [];
-
-    function renderProducts() {
-      const list = document.getElementById('productList');
-      list.innerHTML = '';
-      
-      products.forEach((p, index) => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-          <button class="btn-delete" onclick="deleteProduct(${index})">حذف</button>
-          <div class="product-title">${p.name}</div>
-          <div class="product-price">السعر: ${p.price}</div>
-          ${p.desc ? `<div class="product-desc">${p.desc}</div>` : ''}
-          <button class="btn btn-wa" onclick="shareWhatsApp('${p.name}', '${p.price}', '${p.desc}')">
-            مشاركة عبر الواتساب
-          </button>
-        `;
-        list.appendChild(card);
-      });
+    function add() {
+      let n = document.getElementById('name').value;
+      let p = document.getElementById('price').value;
+      if(!n) return;
+      let div = document.createElement('div');
+      div.className = 'product-card';
+      div.innerHTML = `<div>${n}</div><div style="color:#d4af37">${p}</div><button class="wa-btn" onclick="share('${n}','${p}')">واتساب</button>`;
+      document.getElementById('list').appendChild(div);
     }
-
-    function addProduct() {
-      const name = document.getElementById('pName').value.trim();
-      const price = document.getElementById('pPrice').value.trim();
-      const desc = document.getElementById('pDesc').value.trim();
-
-      if (!name || !price) {
-        alert('يرجى كتابة اسم المنتج والسعر على الأقل');
-        return;
-      }
-
-      products.unshift({ name, price, desc });
-      localStorage.setItem('shuaa_products', JSON.stringify(products));
-      
-      document.getElementById('pName').value = '';
-      document.getElementById('pPrice').value = '';
-      document.getElementById('pDesc').value = '';
-
-      renderProducts();
+    function share(n, p) {
+      window.location.href = "whatsapp://send?text=المنتج: " + n + " السعر: " + p;
     }
-
-    function deleteProduct(index) {
-      if (confirm('هل أنت تأكد من حذف هذا المنتج؟')) {
-        products.splice(index, 1);
-        localStorage.setItem('shuaa_products', JSON.stringify(products));
-        renderProducts();
-      }
-    }
-
-    function shareWhatsApp(name, price, desc) {
-      let text = `*شعاع الأنوار للتجارة*\n\n`;
-      text += `📦 *المنتج:* ${name}\n`;
-      text += `💰 *السعر:* ${price}\n`;
-      if (desc) text += `📝 *التفاصيل:* ${desc}\n`;
-      
-      const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
-      window.location.href = url;
-    }
-
-    // تشغيل القائمة عند الفتح
-    renderProducts();
   </script>
 </body>
 </html>

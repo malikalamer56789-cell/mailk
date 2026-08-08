@@ -1,244 +1,122 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق شعاع الأنوار - إدارة ومشاركة المنتجات</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>شعاع الأنوار - إدارة المنتجات</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f4f6f9; text-align: center; }
-    .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
-    input, button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-border; }
-    button { background: #25D366; color: white; font-weight: bold; border: none; cursor: pointer; }
+    :root {
+      --primary: #d4af37;
+      --bg: #121212;
+      --card-bg: #1e1e1e;
+      --text: #ffffff;
+      --green: #25d366;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 15px; }
+    
+    .header { text-align: center; margin-bottom: 20px; padding: 10px; border-bottom: 2px solid var(--primary); }
+    .header h1 { color: var(--primary); font-size: 22px; }
+
+    .form-card { background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    .form-card h2 { font-size: 16px; margin-bottom: 10px; color: #ccc; }
+    
+    input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 14px; }
+    input:focus { border-color: var(--primary); outline: none; }
+
+    .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
+    .btn-add { background: var(--primary); color: #000; margin-top: 5px; }
+    .btn-wa { background: var(--green); color: #fff; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+    .products-list { display: flex; flex-direction: column; gap: 15px; }
+    .product-card { background: var(--card-bg); border-radius: 12px; padding: 15px; border-right: 4px solid var(--primary); position: relative; }
+    .product-title { font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 5px; }
+    .product-price { font-size: 16px; color: var(--primary); font-weight: bold; margin-bottom: 8px; }
+    .product-desc { font-size: 13px; color: #aaa; margin-bottom: 12px; white-space: pre-line; }
+
+    .btn-delete { background: #ff4d4d; color: white; padding: 5px 10px; border-radius: 6px; font-size: 12px; border: none; float: left; }
   </style>
 </head>
 <body>
-  <h2>شعاع الأنوار - مشاركة المنتجات</h2>
-  <div class="card">
-    <input type="text" id="name" placeholder="اسم المنتج">
-    <input type="text" id="price" placeholder="السعر">
-    <button onclick="share()">مشاركة عبر الواتساب</button>
+
+  <div class="header">
+    <h1>شعاع الأنوار</h1>
+    <p style="font-size: 12px; color: #888;">نظام إدارة ومشاركة المنتجات</p>
   </div>
 
+  <div class="form-card">
+    <h2>إضافة منتج جديد</h2>
+    <input type="text" id="pName" placeholder="اسم المنتج">
+    <input type="text" id="pPrice" placeholder="السعر (مثال: 50$ أو 5000 ريال)">
+    <textarea id="pDesc" rows="3" placeholder="تفاصيل أو ملاحظات عن المنتج"></textarea>
+    <button class="btn btn-add" onclick="addProduct()">حفظ المنتج</button>
+  </div>
+
+  <div class="products-list" id="productList"></div>
+
   <script>
-    function share() {
-      var name = document.getElementById('name').value;
-      var price = document.getElementById('price').value;
-      if (!name) { alert('يرجى كتابة اسم المنتج'); return; }
-      var text = encodeURIComponent("المنتج: " + name + "\nالسعر: " + price);
-      window.open("https://api.whatsapp.com/send?text=" + text, "_blank");
+    let products = JSON.parse(localStorage.getItem('shuaa_products')) || [];
+
+    function renderProducts() {
+      const list = document.getElementById('productList');
+      list.innerHTML = '';
+      
+      products.forEach((p, index) => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <button class="btn-delete" onclick="deleteProduct(${index})">حذف</button>
+          <div class="product-title">${p.name}</div>
+          <div class="product-price">السعر: ${p.price}</div>
+          ${p.desc ? `<div class="product-desc">${p.desc}</div>` : ''}
+          <button class="btn btn-wa" onclick="shareWhatsApp('${p.name}', '${p.price}', '${p.desc}')">
+            مشاركة عبر الواتساب
+          </button>
+        `;
+        list.appendChild(card);
+      });
     }
+
+    function addProduct() {
+      const name = document.getElementById('pName').value.trim();
+      const price = document.getElementById('pPrice').value.trim();
+      const desc = document.getElementById('pDesc').value.trim();
+
+      if (!name || !price) {
+        alert('يرجى كتابة اسم المنتج والسعر على الأقل');
+        return;
+      }
+
+      products.unshift({ name, price, desc });
+      localStorage.setItem('shuaa_products', JSON.stringify(products));
+      
+      document.getElementById('pName').value = '';
+      document.getElementById('pPrice').value = '';
+      document.getElementById('pDesc').value = '';
+
+      renderProducts();
+    }
+
+    function deleteProduct(index) {
+      if (confirm('هل أنت تأكد من حذف هذا المنتج؟')) {
+        products.splice(index, 1);
+        localStorage.setItem('shuaa_products', JSON.stringify(products));
+        renderProducts();
+      }
+    }
+
+    function shareWhatsApp(name, price, desc) {
+      let text = `*شعاع الأنوار للتجارة*\n\n`;
+      text += `📦 *المنتج:* ${name}\n`;
+      text += `💰 *السعر:* ${price}\n`;
+      if (desc) text += `📝 *التفاصيل:* ${desc}\n`;
+      
+      const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
+      window.location.href = url;
+    }
+
+    // تشغيل القائمة عند الفتح
+    renderProducts();
   </script>
 </body>
 </html>
-            padding: 0;
-        }
-        body {
-            background-color: #f4f6f9;
-            color: #333;
-            padding: 15px;
-        }
-        header {
-            background: #1a252f;
-            color: #fff;
-            padding: 15px;
-            text-align: center;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        header h1 {
-            font-size: 20px;
-        }
-        .card {
-            background: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        .card h2 {
-            font-size: 16px;
-            margin-bottom: 12px;
-            color: #2c3e50;
-        }
-        input, button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        button.btn-add {
-            background-color: #27ae60;
-            color: white;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-        }
-        button.btn-add:hover {
-            background-color: #219150;
-        }
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px;
-        }
-        .product-card {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .product-card img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-        }
-        .product-info {
-            padding: 10px;
-        }
-        .product-title {
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-        .product-price {
-            color: #e74c3c;
-            font-weight: bold;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-        .btn-whatsapp {
-            background-color: #25D366;
-            color: white;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .btn-share {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-
-    <header>
-        <h1>تطبيق شعاع الأنوار للمنتجات</h1>
-    </header>
-
-    <!-- نموذج إضافة منتج -->
-    <div class="card">
-        <h2>إضافة منتج جديد</h2>
-        <input type="text" id="pName" placeholder="اسم المنتج (مثال: محول طاقة)">
-        <input type="text" id="pPrice" placeholder="السعر (مثال: $50 أو 20,000 ر.ي)">
-        <input type="url" id="pImg" placeholder="رابط صورة المنتج (URL)">
-        <button class="btn-add" onclick="addProduct()">إضافة المنتج للمعرض</button>
-    </div>
-
-    <!-- معرض المنتجات -->
-    <div class="card">
-        <h2>قائمة المنتجات المتاحة</h2>
-        <div class="products-grid" id="productList">
-            <!-- سيتم إضافة المنتجات هنا تلقائياً -->
-        </div>
-    </div>
-
-    <script>
-        // استرجاع المنتجات المخزنة مسبقاً
-        let products = JSON.parse(localStorage.getItem('myProducts')) || [];
-
-        function renderProducts() {
-            const container = document.getElementById('productList');
-            container.innerHTML = '';
-            
-            if (products.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">لا يوجد منتجات مضافة حالياً.</p>';
-                return;
-            }
-
-            products.forEach((product, index) => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = `
-                    <img src="${product.img}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/150?text=بدون+صورة'">
-                    <div class="product-info">
-                        <div class="product-title">${product.name}</div>
-                        <div class="product-price">${product.price}</div>
-                        <button class="btn-whatsapp" onclick="shareWhatsApp('${product.name}', '${product.price}', '${product.img}')">إرسال للعميل (واتساب)</button>
-                        <button class="btn-share" onclick="shareApp('${product.name}', '${product.price}', '${product.img}')">مشاركة مع الموظفين</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function addProduct() {
-            const name = document.getElementById('pName').value;
-            const price = document.getElementById('pPrice').value;
-            const img = document.getElementById('pImg').value;
-
-            if (!name || !price) {
-                alert('يرجى كتابة اسم المنتج والسعر على الأقل');
-                return;
-            }
-
-            const newProduct = {
-                name: name,
-                price: price,
-                img: img || 'https://via.placeholder.com/150?text=بدون+صورة'
-            };
-
-            products.push(newProduct);
-            localStorage.setItem('myProducts', JSON.stringify(products));
-            
-            // إعادة تعيين الخانات
-            document.getElementById('pName').value = '';
-            document.getElementById('pPrice').value = '';
-            document.getElementById('pImg').value = '';
-
-            renderProducts();
-        }
-
-        // إرسال تفاصيل المنتج للعميل عبر واتساب
-        function shareWhatsApp(name, price, img) {
-            const text = `السلام عليكم ورحمة الله وبركاته،%0A%0A*عرض خاص على منتج:* ${name}%0A*السعر:* ${price}%0A%0A*صورة المنتج:* ${img}`;
-            window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-        }
-
-        // مشاركة المنتج والتطبيق مع الموظفين
-        function shareApp(name, price, img) {
-            if (navigator.share) {
-                navigator.share({
-                    title: name,
-                    text: `تفاصيل المنتج: ${name} - السعر: ${price}`,
-                    url: window.location.href
-                }).catch(err => console.log(err));
-            } else {
-                alert('ميزة المشاركة غير مدعومة مباشرة على هذا المتصفح، يمكنك استخدام زر الواتساب.');
-            }
-        }
-
-        // تشغيل العرض عند فتح التطبيق
-        renderProducts();
-    </script>
-</body>
-</html>
-

@@ -9,6 +9,38 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>شعاع الأنوار - إدارة المنتجات</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f4f6f9; text-align: center; }
+    .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
+    input, button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-border; }
+    button { background: #25D366; color: white; font-weight: bold; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>شعاع الأنوار - مشاركة المنتجات</h2>
+  <div class="card">
+    <input type="text" id="name" placeholder="اسم المنتج">
+    <input type="text" id="price" placeholder="السعر">
+    <button onclick="share()">مشاركة عبر الواتساب</button>
+  </div>
+
+  <script>
+    function share() {
+      var name = document.getElementById('name').value;
+      var price = document.getElementById('price').value;
+      if (!name) { alert('يرجى كتابة اسم المنتج'); return; }
+      var text = encodeURIComponent("المنتج: " + name + "\nالسعر: " + price);
+      window.open("https://api.whatsapp.com/send?text=" + text, "_blank");
+    }
+  </script>
+</body>
+</html>
             padding: 0;
         }
         body {

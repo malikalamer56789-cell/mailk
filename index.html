@@ -5,237 +5,368 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>شعاع الأنوار للتجارة</title>
   <style>
-    :root { --main: #d4af37; --bg: #121212; --card: #1e1e1e; --text: #fff; --green: #25d366; }
-    body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; padding: 10px; margin: 0; }
-    .header-logo { text-align: center; color: var(--main); font-size: 20px; font-weight: bold; margin-bottom: 12px; }
-    
-    /* Tabs Navigation */
-    .tabs-container { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
-    .tab { background: #333; padding: 10px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-size: 13px; font-weight: bold; color: #ccc; flex: 1; text-align: center; }
-    .tab.active { background: var(--main); color: #000; }
-    
-    /* Content Panels */
-    .content { display: none; }
-    .content.active { display: block; }
-    
+    :root { --main: #d4af37; --bg: #121212; --card: #1e1e1e; --text: #ffffff; --green: #25d366; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 10px; }
+
+    /* Header & Logo */
+    .app-header { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #1a1a1a; border-radius: 10px; margin-bottom: 12px; border: 1px solid #333; cursor: pointer; }
+    .logo-box { display: flex; align-items: center; gap: 10px; width: 100%; }
+    .brand-title { color: var(--main); font-size: 16px; font-weight: bold; }
+
+    /* Tabs Bar */
+    .nav-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 5px; margin-bottom: 15px; }
+    .tab-btn { flex: 1; padding: 12px 8px; background: #2a2a2a; color: #aaa; border: none; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; text-align: center; white-space: nowrap; -webkit-tap-highlight-color: transparent; }
+    .tab-btn.active { background: var(--main); color: #000; }
+
+    /* Panels */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
     /* Cards & Inputs */
-    .card { background: var(--card); padding: 12px; border-radius: 10px; margin-bottom: 12px; border-right: 4px solid var(--main); }
-    input, textarea, select { width: 100%; padding: 12px; margin: 6px 0; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; box-sizing: border-box; font-size: 14px; }
-    button { width: 100%; padding: 12px; margin-top: 6px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+    .card { background: var(--card); border-radius: 12px; padding: 14px; margin-bottom: 12px; border-right: 4px solid var(--main); }
+    .card-title { font-size: 15px; font-weight: bold; margin-bottom: 10px; color: var(--main); }
+    
+    input, select, textarea { width: 100%; padding: 12px; margin: 6px 0; border-radius: 8px; border: 1px solid #444; background: #282828; color: #fff; font-size: 14px; outline: none; }
+    
+    button { display: block; width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; margin-top: 6px; text-align: center; }
     .btn-main { background: var(--main); color: #000; }
     .btn-wa { background: var(--green); color: #fff; }
-    .btn-small { width: auto; padding: 6px 10px; font-size: 12px; }
-    .list-item { background: #2a2a2a; padding: 10px; border-radius: 6px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+    .btn-danger { background: #e74c3c; color: #fff; }
+
+    .list-item { background: #2a2a2a; border-radius: 8px; padding: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+
+    /* Modal Overlay */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center; padding: 20px; }
+    .modal-overlay.active { display: flex; }
+    .modal-card { background: #222; border-radius: 12px; padding: 20px; width: 100%; max-width: 350px; border: 1px solid var(--main); }
   </style>
 </head>
 <body>
 
-  <div class="header-logo">شعاع الأنوار للتجارة</div>
+  <!-- Header Section with Clickable Logo -->
+  <div class="app-header" onclick="openModal()">
+    <div class="logo-box">
+      <div style="background: var(--main); color: #000; font-weight: bold; width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size:14px;">شعاع</div>
+      <div>
+        <div class="brand-title">شعاع الأنوار للتجارة</div>
+        <div style="font-size: 11px; color: #aaa;">اضغط هنا للإعدادات والأذونات ⚙️</div>
+      </div>
+    </div>
+  </div>
 
-  <!-- التبويبات -->
-  <div class="tabs-container">
-    <div id="tab-orders" class="tab active" onclick="switchTab('orders')">📦 الطلبات</div>
-    <div id="tab-nawaqis" class="tab" onclick="switchTab('nawaqis')">⚠️ النواقص</div>
-    <div id="tab-received" class="tab" onclick="switchTab('received')">📥 الواصل</div>
-    <div id="tab-clients" class="tab" onclick="switchTab('clients')">👥 العملاء</div>
+  <!-- Tabs Navigation -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" id="btn-orders" onclick="showTab('orders')">📦 الطلبات</button>
+    <button class="tab-btn" id="btn-nawaqis" onclick="showTab('nawaqis')">⚠️ النواقص</button>
+    <button class="tab-btn" id="btn-received" onclick="showTab('received')">📥 الواصل</button>
+    <button class="tab-btn" id="btn-clients" onclick="showTab('clients')">👥 العملاء</button>
   </div>
 
   <!-- 1. قسم الطلبات -->
-  <div id="orders" class="content active">
+  <div id="tab-orders" class="panel active">
     <div class="card">
-      <h3 style="margin:0 0 8px 0;">تسجيل وإرسال طلب</h3>
-      <input type="text" id="oName" placeholder="اسم الصنف (مثال: علب حديد ama)">
-      <input type="number" id="oQty" placeholder="الكمية">
+      <div class="card-title">تسجيل وإرسال طلب جديد</div>
       
-      <label style="font-size:12px; color:var(--main);">اختيار العميل من المسجلين عندك:</label>
-      <select id="oClientSelect" onchange="fillClientData()">
-        <option value="">-- اختر العميل --</option>
+      <input type="text" id="orderItem" placeholder="اسم الصنف (مثال: علب حديد ama)">
+      <input type="number" id="orderQty" placeholder="الكمية">
+
+      <label style="font-size: 11px; color: var(--main); margin-top: 5px; display: block;">اختيار سريع من قائمة العملاء:</label>
+      <select id="clientDropdown" onchange="selectClient()">
+        <option value="">-- اختر من العملاء المسجلين --</option>
       </select>
 
-      <input type="text" id="oClientName" placeholder="اسم العميل">
-      <input type="tel" id="oClientPhone" placeholder="رقم الهاتف (مثل: 77224063)">
-      
-      <label style="font-size:12px; color:#aaa;">صورة المنتج (الكاميرا):</label>
-      <input type="file" id="oImg" accept="image/*" capture="environment">
-      
-      <button class="btn-wa" onclick="sendOrderWA()">📲 إرسال الطلب عبر الواتساب</button>
+      <input type="text" id="clientName" placeholder="اسم العميل">
+      <input type="tel" id="clientPhone" placeholder="رقم الهاتف (مثال: 77224063)">
+
+      <label style="font-size: 11px; color: #aaa; margin-top: 5px; display: block;">صورة المنتج (الكاميرا):</label>
+      <input type="file" id="orderPhoto" accept="image/*" capture="environment">
+
+      <button class="btn-wa" onclick="sendOrderWhatsApp()">📲 إرسال الطلب عبر الواتساب</button>
+      <a id="hiddenWaLink" href="#" target="_blank" style="display:none;"></a>
     </div>
   </div>
 
   <!-- 2. قسم النواقص -->
-  <div id="nawaqis" class="content">
+  <div id="tab-nawaqis" class="panel">
     <div class="card">
-      <h3 style="margin:0 0 8px 0;">إضافة صنف ناقص</h3>
-      <input type="text" id="nName" placeholder="اسم الصنف الناقص">
-      <input type="number" id="nQty" placeholder="الكمية المطلوبة">
-      <button class="btn-main" onclick="addNawaqis()">حفظ في النواقص</button>
+      <div class="card-title">إضافة صنف ناقص</div>
+      <input type="text" id="nqItem" placeholder="اسم الصنف الناقص">
+      <input type="number" id="nqQty" placeholder="الكمية المطلوبة">
+      <button class="btn-main" onclick="addNawaqisItem()">حفظ في قائمة النواقص</button>
     </div>
-    <button class="btn-wa" style="margin-bottom:10px" onclick="shareNawaqisWA()">📲 إرسال كشف النواقص بالواتساب</button>
+    <button class="btn-wa" style="margin-bottom: 10px;" onclick="sendNawaqisWhatsApp()">📲 إرسال كشف النواقص للواتساب</button>
     <div id="nawaqisList"></div>
   </div>
 
   <!-- 3. قسم البضاعة الواصلة -->
-  <div id="received" class="content">
+  <div id="tab-received" class="panel">
     <div class="card">
-      <h3 style="margin:0 0 8px 0;">تسجيل بضاعة واصلة</h3>
-      <p style="font-size:11px; color:#ccc;">سيتم خصم الكمية تلقائياً من النواقص.</p>
-      <input type="text" id="rName" placeholder="اسم الصنف الواصل">
-      <input type="number" id="rQty" placeholder="الكمية الواصلة">
-      <button class="btn-main" onclick="receiveGoods()">تسجيل وخصم من النواقص</button>
+      <div class="card-title">تسجيل بضاعة واصلة</div>
+      <p style="font-size: 11px; color: #aaa; margin-bottom: 8px;">يتم الخصم تلقائياً من النواقص عند تسليم البضاعة الواصلة.</p>
+      <input type="text" id="rcItem" placeholder="اسم الصنف الواصل">
+      <input type="number" id="rcQty" placeholder="الكمية الواصلة">
+      <button class="btn-main" onclick="processReceivedItem()">تسجيل وخصم من النواقص</button>
     </div>
   </div>
 
   <!-- 4. قسم العملاء -->
-  <div id="clients" class="content">
+  <div id="tab-clients" class="panel">
     <div class="card">
-      <h3 style="margin:0 0 8px 0;">إضافة عميل جديد</h3>
-      <input type="text" id="cName" placeholder="اسم العميل">
-      <input type="tel" id="cPhone" placeholder="رقم الهاتف">
-      <button class="btn-main" onclick="addClient()">حفظ العميل</button>
+      <div class="card-title">إضافة عميل جديد</div>
+      <input type="text" id="clName" placeholder="اسم العميل">
+      <input type="tel" id="clPhone" placeholder="رقم الهاتف (مثال: 77224063)">
+      <button class="btn-main" onclick="addClientItem()">حفظ العميل</button>
     </div>
     <div id="clientsList"></div>
   </div>
 
+  <!-- نافذة الإعدادات والأذونات -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <h3 style="color: var(--main); margin-bottom: 10px;">⚙️ الإعدادات والأذونات</h3>
+      <p style="font-size: 12px; color: #ccc; margin-bottom: 15px; line-height: 1.6;">
+        • <strong>التنقل والأزرار:</strong> تم تحديث النظام ليعمل بشكل سريع ومستقل.<br>
+        • <strong>الواتساب:</strong> إرسال مباشر ومستقر بدون تعليق.<br>
+        • <strong>العملاء والنواقص:</strong> تُحفظ البيانات محلياً على الهاتف.
+      </p>
+      
+      <button class="btn-danger" onclick="resetAllData()" style="margin-bottom: 8px;">🗑️ مسح كافة البيانات المخزنة</button>
+      <button class="btn-main" onclick="closeModal()">إغلاق النافذة</button>
+    </div>
+  </div>
+
   <script>
-    // --- التنقل بين الأقسام ---
-    function switchTab(tabId) {
-      var contents = document.getElementsByClassName('content');
-      for (var i = 0; i < contents.length; i++) contents[i].classList.remove('active');
-      
-      var tabs = document.getElementsByClassName('tab');
-      for (var j = 0; j < tabs.length; j++) tabs[j].classList.remove('active');
-      
-      document.getElementById(tabId).classList.add('active');
-      document.getElementById('tab-' + tabId).classList.add('active');
+    function safeGet(key) {
+      try {
+        var data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : [];
+      } catch(e) { return []; }
     }
 
-    // --- الواتساب والأرقام ---
-    function formatYemenPhone(phone) {
-      let clean = phone.replace(/\D/g, '');
-      if (clean.length === 9 && clean.startsWith('7')) clean = '967' + clean;
-      else if (clean.length === 8 && clean.startsWith('7')) clean = '967' + clean;
+    function safeSet(key, val) {
+      try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+    }
+
+    function showTab(tabName) {
+      var tabs = ['orders', 'nawaqis', 'received', 'clients'];
+      for (var i = 0; i < tabs.length; i++) {
+        var t = tabs[i];
+        var panelEl = document.getElementById('tab-' + t);
+        var btnEl = document.getElementById('btn-' + t);
+        if (panelEl) panelEl.style.display = (t === tabName) ? 'block' : 'none';
+        if (btnEl) {
+          if (t === tabName) btnEl.classList.add('active');
+          else btnEl.classList.remove('active');
+        }
+      }
+    }
+
+    function openModal() { document.getElementById('settingsModal').classList.add('active'); }
+    function closeModal() { document.getElementById('settingsModal').classList.remove('active'); }
+    
+    function resetAllData() {
+      if (confirm('هل ترغب بمسح جميع البيانات المكتوبة والأصناف؟')) {
+        try { localStorage.clear(); } catch(e) {}
+        alert('تم المسح بنجاح');
+        location.reload();
+      }
+    }
+
+    function formatPhone(phone) {
+      if (!phone) return '';
+      var clean = phone.replace(/\D/g, '');
+      if (clean.length === 9 && clean.indexOf('7') === 0) clean = '967' + clean;
+      else if (clean.length === 8 && clean.indexOf('7') === 0) clean = '967' + clean;
       return clean;
     }
 
-    function sendOrderWA() {
-      let name = document.getElementById('oName').value.trim();
-      let qty = document.getElementById('oQty').value.trim();
-      let client = document.getElementById('oClientName').value.trim();
-      let phoneInput = document.getElementById('oClientPhone').value.trim();
-
-      if (!name || !qty) return alert('أدخل اسم الصنف والكمية أولاً');
-
-      let text = `*طلب جديد - شعاع الأنوار*\n📦 الصنف: ${name}\n🔢 الكمية: ${qty}\n👤 العميل: ${client || 'غير محدد'}`;
-      let phone = formatYemenPhone(phoneInput);
+    function triggerWhatsApp(phone, text) {
+      var cleanNum = formatPhone(phone);
+      var url = cleanNum ? 
+        'https://api.whatsapp.com/send?phone=' + cleanNum + '&text=' + encodeURIComponent(text) :
+        'https://api.whatsapp.com/send?text=' + encodeURIComponent(text);
       
-      let url = phone ? 
-        `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}` : 
-        `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-      
-      window.location.href = url;
-    }
-
-    // --- إدارة العملاء والنواقص ---
-    let clients = JSON.parse(localStorage.getItem('sh_clients_v3')) || [];
-    let nawaqis = JSON.parse(localStorage.getItem('sh_nawaqis_v3')) || [];
-
-    function addClient() {
-      let name = document.getElementById('cName').value.trim();
-      let phone = document.getElementById('cPhone').value.trim();
-      if (!name || !phone) return alert('أدخل اسم العميل ورقم الهاتف');
-      clients.push({ name, phone });
-      localStorage.setItem('sh_clients_v3', JSON.stringify(clients));
-      document.getElementById('cName').value = ''; document.getElementById('cPhone').value = '';
-      updateClientsUI(); alert('تم حفظ العميل بنجاح');
-    }
-
-    function updateClientsUI() {
-      let select = document.getElementById('oClientSelect');
-      select.innerHTML = '<option value="">-- اختر العميل --</option>';
-      let list = document.getElementById('clientsList');
-      list.innerHTML = '';
-      
-      clients.forEach((c, index) => {
-        select.innerHTML += `<option value="${index}">${c.name} (${c.phone})</option>`;
-        list.innerHTML += `<div class="list-item">
-          <div>👤 <strong>${c.name}</strong> <br> 📞 ${c.phone}</div>
-          <button class="btn-main btn-small" style="background:#ff4d4d; color:#fff;" onclick="delClient(${index})">حذف</button>
-        </div>`;
-      });
-    }
-
-    function fillClientData() {
-      let idx = document.getElementById('oClientSelect').value;
-      if (idx !== "") {
-        document.getElementById('oClientName').value = clients[idx].name;
-        document.getElementById('oClientPhone').value = clients[idx].phone;
+      var link = document.getElementById('hiddenWaLink');
+      if (link) {
+        link.href = url;
+        link.click();
+      } else {
+        window.location.href = url;
       }
     }
 
-    function delClient(index) {
-      clients.splice(index, 1);
-      localStorage.setItem('sh_clients_v3', JSON.stringify(clients));
-      updateClientsUI();
+    function sendOrderWhatsApp() {
+      var item = document.getElementById('orderItem').value;
+      var qty = document.getElementById('orderQty').value;
+      var client = document.getElementById('clientName').value;
+      var phone = document.getElementById('clientPhone').value;
+
+      if (!item || !qty) {
+        alert('يرجى كتابة اسم الصنف والكمية');
+        return;
+      }
+
+      var text = '*طلب جديد - شعاع الأنوار*\n📦 الصنف: ' + item + '\n🔢 الكمية: ' + qty + '\n👤 العميل: ' + (client || 'غير محدد');
+      triggerWhatsApp(phone, text);
     }
 
-    function addNawaqis() {
-      let name = document.getElementById('nName').value.trim();
-      let qty = parseFloat(document.getElementById('nQty').value);
-      if (!name || !qty) return alert('أدخل الصنف والكمية');
-      
-      let item = nawaqis.find(i => i.name === name);
-      if (item) item.qty += qty;
-      else nawaqis.push({ name, qty });
-      
-      localStorage.setItem('sh_nawaqis_v3', JSON.stringify(nawaqis));
-      document.getElementById('nName').value = ''; document.getElementById('nQty').value = '';
-      renderNawaqis();
+    function renderClients() {
+      var list = safeGet('sh_clients_app');
+      var dropdown = document.getElementById('clientDropdown');
+      var container = document.getElementById('clientsList');
+
+      if (dropdown) {
+        dropdown.innerHTML = '<option value="">-- اختر من العملاء المسجلين --</option>';
+        for (var i = 0; i < list.length; i++) {
+          dropdown.innerHTML += '<option value="' + i + '">' + list[i].name + ' (' + list[i].phone + ')</option>';
+        }
+      }
+
+      if (container) {
+        container.innerHTML = '';
+        for (var j = 0; j < list.length; j++) {
+          (function(index) {
+            var item = list[index];
+            var div = document.createElement('div');
+            div.className = 'list-item';
+            div.innerHTML = '<div>👤 <strong>' + item.name + '</strong><br>📞 ' + item.phone + '</div>' +
+              '<button class="btn-danger" style="width:auto; padding:5px 10px; font-size:11px;">حذف</button>';
+            div.querySelector('button').onclick = function() { removeClient(index); };
+            container.appendChild(div);
+          })(j);
+        }
+      }
+    }
+
+    function addClientItem() {
+      var name = document.getElementById('clName').value;
+      var phone = document.getElementById('clPhone').value;
+      if (!name || !phone) {
+        alert('أدخل اسم العميل ورقم الهاتف');
+        return;
+      }
+      var list = safeGet('sh_clients_app');
+      list.push({ name: name, phone: phone });
+      safeSet('sh_clients_app', list);
+      document.getElementById('clName').value = '';
+      document.getElementById('clPhone').value = '';
+      renderClients();
+      alert('تم حفظ العميل بنجاح');
+    }
+
+    function selectClient() {
+      var idx = document.getElementById('clientDropdown').value;
+      if (idx !== "") {
+        var list = safeGet('sh_clients_app');
+        if (list[idx]) {
+          document.getElementById('clientName').value = list[idx].name;
+          document.getElementById('clientPhone').value = list[idx].phone;
+        }
+      }
+    }
+
+    function removeClient(index) {
+      var list = safeGet('sh_clients_app');
+      list.splice(index, 1);
+      safeSet('sh_clients_app', list);
+      renderClients();
     }
 
     function renderNawaqis() {
-      let div = document.getElementById('nawaqisList');
-      div.innerHTML = '';
-      nawaqis.forEach((item, i) => {
-        div.innerHTML += `<div class="list-item">
-          <div><strong>${item.name}</strong> <br> <span style="color:var(--main)">الكمية: ${item.qty}</span></div>
-          <button class="btn-main btn-small" style="background:#ff4d4d; color:#fff;" onclick="delNawaqis(${i})">حذف</button>
-        </div>`;
-      });
+      var list = safeGet('sh_nawaqis_app');
+      var container = document.getElementById('nawaqisList');
+      if (!container) return;
+      container.innerHTML = '';
+
+      for (var i = 0; i < list.length; i++) {
+        (function(index) {
+          var item = list[index];
+          var div = document.createElement('div');
+          div.className = 'list-item';
+          div.innerHTML = '<div><strong>' + item.name + '</strong><br><span style="color:var(--main)">الكمية المطلوب توفيرها: ' + item.qty + '</span></div>' +
+            '<button class="btn-danger" style="width:auto; padding:5px 10px; font-size:11px;">حذف</button>';
+          div.querySelector('button').onclick = function() { removeNawaqis(index); };
+          container.appendChild(div);
+        })(i);
+      }
     }
 
-    function delNawaqis(i) {
-      nawaqis.splice(i, 1);
-      localStorage.setItem('sh_nawaqis_v3', JSON.stringify(nawaqis));
+    function addNawaqisItem() {
+      var name = document.getElementById('nqItem').value;
+      var qty = parseFloat(document.getElementById('nqQty').value);
+      if (!name || !qty) {
+        alert('أدخل الصنف والكمية');
+        return;
+      }
+      var list = safeGet('sh_nawaqis_app');
+      var found = false;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].name === name) {
+          list[i].qty += qty;
+          found = true;
+          break;
+        }
+      }
+      if (!found) list.push({ name: name, qty: qty });
+      safeSet('sh_nawaqis_app', list);
+      document.getElementById('nqItem').value = '';
+      document.getElementById('nqQty').value = '';
+      renderNawaqis();
+      alert('تمت الإضافة لقائمة النواقص');
+    }
+
+    function removeNawaqis(index) {
+      var list = safeGet('sh_nawaqis_app');
+      list.splice(index, 1);
+      safeSet('sh_nawaqis_app', list);
       renderNawaqis();
     }
 
-    function shareNawaqisWA() {
-      if (nawaqis.length === 0) return alert('سجل النواقص فارغ');
-      let text = `*كشف النواقص - شعاع الأنوار*\n\n`;
-      nawaqis.forEach(i => text += `▪️ ${i.name} (الكمية: ${i.qty})\n`);
-      window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-    }
-
-    function receiveGoods() {
-      let name = document.getElementById('rName').value.trim();
-      let qty = parseFloat(document.getElementById('rQty').value);
-      if (!name || !qty) return alert('أدخل الصنف الواصل والكمية');
-
-      let idx = nawaqis.findIndex(i => i.name === name);
-      if (idx !== -1) {
-        nawaqis[idx].qty -= qty;
-        if (nawaqis[idx].qty <= 0) nawaqis.splice(idx, 1);
-        localStorage.setItem('sh_nawaqis_v3', JSON.stringify(nawaqis));
-        renderNawaqis();
-        alert('تم الخصم من كشف النواقص بنجاح');
-      } else {
-        alert('تم التسجيل (الصنف غير موجود بالنواقص)');
+    function sendNawaqisWhatsApp() {
+      var list = safeGet('sh_nawaqis_app');
+      if (list.length === 0) {
+        alert('قائمة النواقص فارغة حالياً');
+        return;
       }
-      document.getElementById('rName').value = ''; document.getElementById('rQty').value = '';
+      var msg = '*كشف النواقص - شعاع الأنوار للتجارة*\n\n';
+      for (var i = 0; i < list.length; i++) {
+        msg += '▪️ ' + list[i].name + ' (الكمية: ' + list[i].qty + ')\n';
+      }
+      triggerWhatsApp('', msg);
     }
 
-    // Init
-    updateClientsUI();
+    function processReceivedItem() {
+      var name = document.getElementById('rcItem').value;
+      var qty = parseFloat(document.getElementById('rcQty').value);
+      if (!name || !qty) {
+        alert('أدخل الصنف الواصل والكمية');
+        return;
+      }
+
+      var list = safeGet('sh_nawaqis_app');
+      var idx = -1;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].name === name) {
+          idx = i;
+          break;
+        }
+      }
+
+      if (idx !== -1) {
+        list[idx].qty -= qty;
+        if (list[idx].qty <= 0) list.splice(idx, 1);
+        safeSet('sh_nawaqis_app', list);
+        renderNawaqis();
+        alert('تم خصم الكمية وتحديث قائمة النواقص تلقائياً.');
+      } else {
+        alert('تم تسجيل البضاعة (الصنف غير موجود مسبقاً في النواقص).');
+      }
+      document.getElementById('rcItem').value = '';
+      document.getElementById('rcQty').value = '';
+    }
+
+    renderClients();
     renderNawaqis();
   </script>
 </body>

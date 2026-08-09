@@ -3,91 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>شعاع الأنوار</title>
+  <title>شعاع الأنوار - نظام الإدارة</title>
   <style>
-    :root { --primary: #d4af37; --bg: #121212; --card-bg: #1e1e1e; --text: #ffffff; --green: #25d366; }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 15px; }
-    .header { text-align: center; margin-bottom: 20px; padding: 10px; border-bottom: 2px solid var(--primary); }
-    .header h1 { color: var(--primary); font-size: 22px; }
-    .form-card { background: var(--card-bg); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
-    input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #333; background: #2a2a2a; color: #fff; }
-    .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; }
-    .btn-add { background: var(--primary); color: #000; }
-    .btn-wa { background: var(--green); color: #fff; margin-top: 8px; }
-    .products-list { display: flex; flex-direction: column; gap: 15px; }
-    .product-card { background: var(--card-bg); border-radius: 12px; padding: 15px; border-right: 4px solid var(--primary); }
-    .product-title { font-size: 18px; font-weight: bold; }
-    .product-price { font-size: 16px; color: var(--primary); font-weight: bold; margin: 5px 0; }
-    .btn-delete { background: #ff4d4d; color: white; padding: 5px 10px; border-radius: 6px; font-size: 12px; border: none; float: left; cursor: pointer; }
+    :root { --main: #d4af37; --bg: #121212; --card: #1e1e1e; --text: #fff; }
+    body { background: var(--bg); color: var(--text); font-family: sans-serif; padding: 10px; }
+    .tabs { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 10px; }
+    .tab { background: #333; padding: 10px 15px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-size: 13px; }
+    .tab.active { background: var(--main); color: #000; font-weight: bold; }
+    .content { display: none; margin-top: 15px; }
+    .content.active { display: block; }
+    .card { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 10px; border-right: 4px solid var(--main); }
+    input, textarea { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; border: none; background: #2a2a2a; color: #fff; }
+    button { width: 100%; padding: 10px; margin-top: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .btn-save { background: var(--main); }
+    .btn-wa { background: #25d366; color: #fff; }
+    .delete-btn { background: #ff4d4d; color: white; padding: 5px 10px; font-size: 11px; float: left; border-radius: 4px; }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h1>شعاع الأنوار</h1>
-    <p style="font-size: 12px; color: #888;">نظام إدارة ومشاركة المنتجات</p>
+  <div class="tabs">
+    <div class="tab active" onclick="show('orders')">📦 الطلبات</div>
+    <div class="tab" onclick="show('nawaqis')">⚠️ النواقص</div>
+    <div class="tab" onclick="show('clients')">👥 العملاء</div>
+    <div class="tab" onclick="show('staff')">👨‍💼 الموظفون</div>
   </div>
 
-  <div class="form-card">
-    <input type="text" id="pName" placeholder="اسم المنتج">
-    <input type="text" id="pPrice" placeholder="السعر">
-    <textarea id="pDesc" rows="2" placeholder="تفاصيل المنتج"></textarea>
-    <button class="btn btn-add" onclick="addProduct()">حفظ المنتج</button>
+  <!-- قسم الطلبات -->
+  <div id="orders" class="content active">
+    <h3>تسجيل طلب جديد</h3>
+    <input type="text" id="oProduct" placeholder="اسم الصنف">
+    <input type="text" id="oClient" placeholder="اسم العميل">
+    <textarea id="oDesc" placeholder="المواصفات"></textarea>
+    <input type="file" accept="image/*" capture="environment" id="oImg">
+    <button class="btn-save" onclick="addOrder()">حفظ وإرسال للعميل</button>
+    <div id="ordersList"></div>
   </div>
 
-  <div class="products-list" id="productList"></div>
+  <!-- قسم النواقص -->
+  <div id="nawaqis" class="content">
+    <h3>سجل النواقص</h3>
+    <input type="text" id="nItem" placeholder="اسم الناقص">
+    <button class="btn-save" onclick="addNawaqis()">إضافة للناقص</button>
+    <div id="nawaqisList"></div>
+  </div>
+
+  <!-- قسم العملاء والموظفين (تم تبسيطهم للسرعة) -->
+  <div id="clients" class="content">
+     <input type="text" id="cName" placeholder="اسم العميل">
+     <input type="tel" id="cPhone" placeholder="رقم الجوال">
+     <button class="btn-save" onclick="addClient()">حفظ عميل</button>
+     <div id="clientsList"></div>
+  </div>
+
+  <div id="staff" class="content">
+     <input type="text" id="sName" placeholder="اسم الموظف">
+     <button class="btn-save" onclick="addStaff()">إضافة موظف</button>
+     <div id="staffList"></div>
+  </div>
 
   <script>
-    let products = JSON.parse(localStorage.getItem('shuaa_products')) || [];
-
-    function renderProducts() {
-      const list = document.getElementById('productList');
-      list.innerHTML = '';
-      products.forEach((p, index) => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.innerHTML = `
-          <button class="btn-delete" onclick="deleteProduct(${index})">حذف</button>
-          <div class="product-title">${p.name}</div>
-          <div class="product-price">السعر: ${p.price}</div>
-          ${p.desc ? `<div style="font-size: 13px; color: #aaa;">${p.desc}</div>` : ''}
-          <button class="btn btn-wa" onclick="shareWhatsApp('${p.name}', '${p.price}', '${p.desc}')">
-            مشاركة عبر الواتساب
-          </button>
-        `;
-        list.appendChild(card);
-      });
+    function show(id) {
+      document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      event.target.classList.add('active');
     }
 
-    function addProduct() {
-      const name = document.getElementById('pName').value.trim();
-      const price = document.getElementById('pPrice').value.trim();
-      const desc = document.getElementById('pDesc').value.trim();
-      if (!name || !price) { alert('يرجى كتابة الاسم والسعر'); return; }
-      products.unshift({ name, price, desc });
-      localStorage.setItem('shuaa_products', JSON.stringify(products));
-      document.getElementById('pName').value = '';
-      document.getElementById('pPrice').value = '';
-      document.getElementById('pDesc').value = '';
-      renderProducts();
+    // منطق النواقص (الحذف التلقائي)
+    function addNawaqis() {
+      let val = document.getElementById('nItem').value;
+      let list = JSON.parse(localStorage.getItem('nawaqis')) || [];
+      list.push(val);
+      localStorage.setItem('nawaqis', JSON.stringify(list));
+      renderNawaqis();
+    }
+    function renderNawaqis() {
+      let list = JSON.parse(localStorage.getItem('nawaqis')) || [];
+      let div = document.getElementById('nawaqisList');
+      div.innerHTML = list.map((item, i) => `<div class='card'>${item} <button class='delete-btn' onclick='remNawaqis(${i})'>وصل</button></div>`).join('');
+    }
+    function remNawaqis(i) {
+      let list = JSON.parse(localStorage.getItem('nawaqis'));
+      list.splice(i, 1);
+      localStorage.setItem('nawaqis', JSON.stringify(list));
+      renderNawaqis();
     }
 
-    function deleteProduct(index) {
-      if (confirm('هل أنت متأكد من الحذف؟')) {
-        products.splice(index, 1);
-        localStorage.setItem('shuaa_products', JSON.stringify(products));
-        renderProducts();
-      }
+    // منطق الطلبات والواتساب
+    function addOrder() {
+      let p = document.getElementById('oProduct').value;
+      let c = document.getElementById('oClient').value;
+      let d = document.getElementById('oDesc').value;
+      let text = `طلب من شعاع الأنوار: ${p} | العميل: ${c} | المواصفات: ${d}`;
+      window.location.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
     }
 
-    function shareWhatsApp(name, price, desc) {
-      let text = `*شعاع الأنوار*\n\n📦 *المنتج:* ${name}\n💰 *السعر:* ${price}\n`;
-      if (desc) text += `📝 *التفاصيل:* ${desc}\n`;
-      window.location.href = "whatsapp://send?text=" + encodeURIComponent(text);
-    }
-
-    renderProducts();
+    renderNawaqis();
   </script>
 </body>
 </html>

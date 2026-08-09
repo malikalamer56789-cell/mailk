@@ -3,82 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>شعاع الأنوار - النظام الشامل</title>
+  <title>شعاع الأنوار للتجارة</title>
   <style>
     :root { --main: #d4af37; --bg: #121212; --card: #1e1e1e; --text: #fff; --green: #25d366; }
     body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; padding: 10px; margin: 0; }
-    .header-logo { text-align: center; color: var(--main); font-size: 20px; font-weight: bold; margin-bottom: 15px; }
+    .header-logo { text-align: center; color: var(--main); font-size: 20px; font-weight: bold; margin-bottom: 12px; }
     
     /* Tabs Navigation */
-    .tabs-container { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; }
-    .tab { background: #333; padding: 12px 15px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-size: 14px; font-weight: bold; color: #ccc; flex-shrink: 0; }
+    .tabs-container { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; }
+    .tab { background: #333; padding: 10px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-size: 13px; font-weight: bold; color: #ccc; flex: 1; text-align: center; }
     .tab.active { background: var(--main); color: #000; }
     
-    /* Content Areas */
-    .content { display: none; animation: fadeIn 0.3s; }
+    /* Content Panels */
+    .content { display: none; }
     .content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     
-    /* Forms & Cards */
-    .card { background: var(--card); padding: 15px; border-radius: 10px; margin-bottom: 15px; border-right: 4px solid var(--main); }
-    .list-item { background: #2a2a2a; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-    input, textarea { width: 100%; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; box-sizing: border-box; }
-    button { width: 100%; padding: 12px; margin-top: 5px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+    /* Cards & Inputs */
+    .card { background: var(--card); padding: 12px; border-radius: 10px; margin-bottom: 12px; border-right: 4px solid var(--main); }
+    input, textarea, select { width: 100%; padding: 12px; margin: 6px 0; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; box-sizing: border-box; font-size: 14px; }
+    button { width: 100%; padding: 12px; margin-top: 6px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
     .btn-main { background: var(--main); color: #000; }
     .btn-wa { background: var(--green); color: #fff; }
-    .btn-small { width: auto; padding: 6px 12px; font-size: 12px; }
-    .btn-contact { background: #3498db; color: #fff; margin-bottom: 5px; }
+    .btn-small { width: auto; padding: 6px 10px; font-size: 12px; }
+    .list-item { background: #2a2a2a; padding: 10px; border-radius: 6px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
   </style>
 </head>
 <body>
 
   <div class="header-logo">شعاع الأنوار للتجارة</div>
 
-  <!-- Tabs Navigation -->
+  <!-- التبويبات -->
   <div class="tabs-container">
-    <div class="tab active" onclick="switchTab(event, 'orders')">📦 الطلبات</div>
-    <div class="tab" onclick="switchTab(event, 'nawaqis')">⚠️ النواقص</div>
-    <div class="tab" onclick="switchTab(event, 'received')">📥 الواصل</div>
-    <div class="tab" onclick="switchTab(event, 'clients')">👥 العملاء</div>
-    <div class="tab" onclick="switchTab(event, 'staff')">👨‍💼 الموظفون</div>
+    <div id="tab-orders" class="tab active" onclick="switchTab('orders')">📦 الطلبات</div>
+    <div id="tab-nawaqis" class="tab" onclick="switchTab('nawaqis')">⚠️ النواقص</div>
+    <div id="tab-received" class="tab" onclick="switchTab('received')">📥 الواصل</div>
+    <div id="tab-clients" class="tab" onclick="switchTab('clients')">👥 العملاء</div>
   </div>
 
   <!-- 1. قسم الطلبات -->
   <div id="orders" class="content active">
     <div class="card">
-      <h3 style="margin-top:0;">تسجيل وإرسال طلب</h3>
-      <input type="text" id="oName" placeholder="اسم الصنف">
+      <h3 style="margin:0 0 8px 0;">تسجيل وإرسال طلب</h3>
+      <input type="text" id="oName" placeholder="اسم الصنف (مثال: علب حديد ama)">
       <input type="number" id="oQty" placeholder="الكمية">
       
-      <button class="btn-contact" onclick="pickContact('oClientPhone', 'oClientName')">👤 استدعاء رقم العميل من جهات الاتصال</button>
+      <label style="font-size:12px; color:var(--main);">اختيار العميل من المسجلين عندك:</label>
+      <select id="oClientSelect" onchange="fillClientData()">
+        <option value="">-- اختر العميل --</option>
+      </select>
+
       <input type="text" id="oClientName" placeholder="اسم العميل">
-      <input type="tel" id="oClientPhone" placeholder="رقم هاتف العميل (اختياري للإرسال المباشر)">
+      <input type="tel" id="oClientPhone" placeholder="رقم الهاتف (مثل: 77224063)">
       
-      <label style="font-size:12px; color:#aaa;">صورة المنتج (تفتح الكاميرا):</label>
+      <label style="font-size:12px; color:#aaa;">صورة المنتج (الكاميرا):</label>
       <input type="file" id="oImg" accept="image/*" capture="environment">
       
-      <button class="btn-wa" onclick="sendOrderWA()">إرسال الطلب عبر الواتساب</button>
+      <button class="btn-wa" onclick="sendOrderWA()">📲 إرسال الطلب عبر الواتساب</button>
     </div>
   </div>
 
   <!-- 2. قسم النواقص -->
   <div id="nawaqis" class="content">
     <div class="card">
-      <h3 style="margin-top:0;">إضافة للنواقص</h3>
+      <h3 style="margin:0 0 8px 0;">إضافة صنف ناقص</h3>
       <input type="text" id="nName" placeholder="اسم الصنف الناقص">
       <input type="number" id="nQty" placeholder="الكمية المطلوبة">
-      <button class="btn-main" onclick="addNawaqis()">حفظ في سجل النواقص</button>
+      <button class="btn-main" onclick="addNawaqis()">حفظ في النواقص</button>
     </div>
-    <button class="btn-wa" style="margin-bottom:15px" onclick="shareNawaqisWA()">إرسال كشف النواقص بالواتساب</button>
+    <button class="btn-wa" style="margin-bottom:10px" onclick="shareNawaqisWA()">📲 إرسال كشف النواقص بالواتساب</button>
     <div id="nawaqisList"></div>
   </div>
 
   <!-- 3. قسم البضاعة الواصلة -->
   <div id="received" class="content">
     <div class="card">
-      <h3 style="margin-top:0;">تسجيل بضاعة واصلة</h3>
-      <p style="font-size:12px; color:#ccc;">سيتم خصم الكمية من قسم النواقص تلقائياً إذا كان الصنف مسجلاً هناك.</p>
-      <input type="text" id="rName" placeholder="اسم الصنف الواصل (يطابق اسم الناقص)">
+      <h3 style="margin:0 0 8px 0;">تسجيل بضاعة واصلة</h3>
+      <p style="font-size:11px; color:#ccc;">سيتم خصم الكمية تلقائياً من النواقص.</p>
+      <input type="text" id="rName" placeholder="اسم الصنف الواصل">
       <input type="number" id="rQty" placeholder="الكمية الواصلة">
       <button class="btn-main" onclick="receiveGoods()">تسجيل وخصم من النواقص</button>
     </div>
@@ -87,81 +88,94 @@
   <!-- 4. قسم العملاء -->
   <div id="clients" class="content">
     <div class="card">
-      <h3 style="margin-top:0;">إدارة العملاء (إرسال العروض)</h3>
-      <input type="text" id="cOffer" placeholder="اكتب الصنف أو العرض لإرساله للعملاء">
-      <button class="btn-wa" onclick="copyBroadcastMsg('cOffer')">تجهيز العرض للرسائل الجماعية (Broadcast)</button>
-    </div>
-    <div class="card">
-      <h4>إضافة عميل جديد</h4>
+      <h3 style="margin:0 0 8px 0;">إضافة عميل جديد</h3>
       <input type="text" id="cName" placeholder="اسم العميل">
-      <input type="tel" id="cPhone" placeholder="رقم الجوال">
+      <input type="tel" id="cPhone" placeholder="رقم الهاتف">
       <button class="btn-main" onclick="addClient()">حفظ العميل</button>
     </div>
     <div id="clientsList"></div>
   </div>
 
-  <!-- 5. قسم الموظفين -->
-  <div id="staff" class="content">
-    <div class="card">
-      <h3 style="margin-top:0;">توجيهات الموظفين</h3>
-      <textarea id="sDirect" rows="2" placeholder="اكتب التوجيهات أو التعليمات هنا..."></textarea>
-      <button class="btn-wa" onclick="copyBroadcastMsg('sDirect')">تجهيز التوجيه لمجموعة الموظفين</button>
-    </div>
-    <div class="card">
-      <h4>إضافة موظف جديد</h4>
-      <input type="text" id="sName" placeholder="اسم الموظف">
-      <input type="tel" id="sPhone" placeholder="رقم الجوال">
-      <button class="btn-main" onclick="addStaff()">حفظ الموظف</button>
-    </div>
-    <div id="staffList"></div>
-  </div>
-
   <script>
-    // --- Navigation Logic (Fixed) ---
-    function switchTab(event, tabId) {
-      document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    // --- التنقل بين الأقسام ---
+    function switchTab(tabId) {
+      var contents = document.getElementsByClassName('content');
+      for (var i = 0; i < contents.length; i++) contents[i].classList.remove('active');
+      
+      var tabs = document.getElementsByClassName('tab');
+      for (var j = 0; j < tabs.length; j++) tabs[j].classList.remove('active');
+      
       document.getElementById(tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
     }
 
-    // --- Contacts API ---
-    async function pickContact(phoneField, nameField) {
-      if ('contacts' in navigator && 'ContactsManager' in window) {
-        try {
-          const contacts = await navigator.contacts.select(['name', 'tel']);
-          if (contacts.length > 0) {
-            if (contacts[0].name) document.getElementById(nameField).value = contacts[0].name[0];
-            if (contacts[0].tel) document.getElementById(phoneField).value = contacts[0].tel[0];
-          }
-        } catch (ex) { alert('لم يتم تحديد جهة اتصال.'); }
-      } else { alert('ميزة استدعاء الأسماء غير مدعومة في هذا المتصفح/النظام مباشرة.'); }
+    // --- الواتساب والأرقام ---
+    function formatYemenPhone(phone) {
+      let clean = phone.replace(/\D/g, '');
+      if (clean.length === 9 && clean.startsWith('7')) clean = '967' + clean;
+      else if (clean.length === 8 && clean.startsWith('7')) clean = '967' + clean;
+      return clean;
     }
 
-    // --- WhatsApp Orders ---
     function sendOrderWA() {
-      let name = document.getElementById('oName').value;
-      let qty = document.getElementById('oQty').value;
-      let client = document.getElementById('oClientName').value;
-      let phone = document.getElementById('oClientPhone').value;
-      if (!name || !qty) return alert('أدخل الصنف والكمية');
-      let text = `*طلب جديد - شعاع الأنوار*\n📦 الصنف: ${name}\n🔢 الكمية: ${qty}\n👤 العميل: ${client}`;
-      let url = phone ? `https://wa.me/${phone.replace(/\D/g,'')}?text=${encodeURIComponent(text)}` : `https://wa.me/?text=${encodeURIComponent(text)}`;
+      let name = document.getElementById('oName').value.trim();
+      let qty = document.getElementById('oQty').value.trim();
+      let client = document.getElementById('oClientName').value.trim();
+      let phoneInput = document.getElementById('oClientPhone').value.trim();
+
+      if (!name || !qty) return alert('أدخل اسم الصنف والكمية أولاً');
+
+      let text = `*طلب جديد - شعاع الأنوار*\n📦 الصنف: ${name}\n🔢 الكمية: ${qty}\n👤 العميل: ${client || 'غير محدد'}`;
+      let phone = formatYemenPhone(phoneInput);
+      
+      let url = phone ? 
+        `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}` : 
+        `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+      
       window.location.href = url;
     }
 
-    // --- Nawaqis & Received Goods (Logic) ---
-    let nawaqis = JSON.parse(localStorage.getItem('sh_nawaqis')) || [];
-    
-    function renderNawaqis() {
-      let div = document.getElementById('nawaqisList');
-      div.innerHTML = '';
-      nawaqis.forEach((item, i) => {
-        div.innerHTML += `<div class="list-item">
-          <div><strong>${item.name}</strong> <br> <span style="color:var(--main)">الكمية المطلوبة: ${item.qty}</span></div>
-          <button class="btn-main btn-small" style="background:#ff4d4d; color:#fff;" onclick="delNawaqis(${i})">حذف</button>
+    // --- إدارة العملاء والنواقص ---
+    let clients = JSON.parse(localStorage.getItem('sh_clients_v3')) || [];
+    let nawaqis = JSON.parse(localStorage.getItem('sh_nawaqis_v3')) || [];
+
+    function addClient() {
+      let name = document.getElementById('cName').value.trim();
+      let phone = document.getElementById('cPhone').value.trim();
+      if (!name || !phone) return alert('أدخل اسم العميل ورقم الهاتف');
+      clients.push({ name, phone });
+      localStorage.setItem('sh_clients_v3', JSON.stringify(clients));
+      document.getElementById('cName').value = ''; document.getElementById('cPhone').value = '';
+      updateClientsUI(); alert('تم حفظ العميل بنجاح');
+    }
+
+    function updateClientsUI() {
+      let select = document.getElementById('oClientSelect');
+      select.innerHTML = '<option value="">-- اختر العميل --</option>';
+      let list = document.getElementById('clientsList');
+      list.innerHTML = '';
+      
+      clients.forEach((c, index) => {
+        select.innerHTML += `<option value="${index}">${c.name} (${c.phone})</option>`;
+        list.innerHTML += `<div class="list-item">
+          <div>👤 <strong>${c.name}</strong> <br> 📞 ${c.phone}</div>
+          <button class="btn-main btn-small" style="background:#ff4d4d; color:#fff;" onclick="delClient(${index})">حذف</button>
         </div>`;
       });
+    }
+
+    function fillClientData() {
+      let idx = document.getElementById('oClientSelect').value;
+      if (idx !== "") {
+        document.getElementById('oClientName').value = clients[idx].name;
+        document.getElementById('oClientPhone').value = clients[idx].phone;
+      }
+    }
+
+    function delClient(index) {
+      clients.splice(index, 1);
+      localStorage.setItem('sh_clients_v3', JSON.stringify(clients));
+      updateClientsUI();
     }
 
     function addNawaqis() {
@@ -169,18 +183,29 @@
       let qty = parseFloat(document.getElementById('nQty').value);
       if (!name || !qty) return alert('أدخل الصنف والكمية');
       
-      let existing = nawaqis.find(i => i.name === name);
-      if (existing) existing.qty += qty;
+      let item = nawaqis.find(i => i.name === name);
+      if (item) item.qty += qty;
       else nawaqis.push({ name, qty });
       
-      localStorage.setItem('sh_nawaqis', JSON.stringify(nawaqis));
+      localStorage.setItem('sh_nawaqis_v3', JSON.stringify(nawaqis));
       document.getElementById('nName').value = ''; document.getElementById('nQty').value = '';
-      renderNawaqis(); alert('تمت الإضافة للنواقص');
+      renderNawaqis();
     }
 
-    function delNawaqis(index) {
-      nawaqis.splice(index, 1);
-      localStorage.setItem('sh_nawaqis', JSON.stringify(nawaqis));
+    function renderNawaqis() {
+      let div = document.getElementById('nawaqisList');
+      div.innerHTML = '';
+      nawaqis.forEach((item, i) => {
+        div.innerHTML += `<div class="list-item">
+          <div><strong>${item.name}</strong> <br> <span style="color:var(--main)">الكمية: ${item.qty}</span></div>
+          <button class="btn-main btn-small" style="background:#ff4d4d; color:#fff;" onclick="delNawaqis(${i})">حذف</button>
+        </div>`;
+      });
+    }
+
+    function delNawaqis(i) {
+      nawaqis.splice(i, 1);
+      localStorage.setItem('sh_nawaqis_v3', JSON.stringify(nawaqis));
       renderNawaqis();
     }
 
@@ -188,7 +213,7 @@
       if (nawaqis.length === 0) return alert('سجل النواقص فارغ');
       let text = `*كشف النواقص - شعاع الأنوار*\n\n`;
       nawaqis.forEach(i => text += `▪️ ${i.name} (الكمية: ${i.qty})\n`);
-      window.location.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
+      window.location.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
     }
 
     function receiveGoods() {
@@ -196,53 +221,22 @@
       let qty = parseFloat(document.getElementById('rQty').value);
       if (!name || !qty) return alert('أدخل الصنف الواصل والكمية');
 
-      let index = nawaqis.findIndex(i => i.name === name);
-      if (index !== -1) {
-        nawaqis[index].qty -= qty;
-        if (nawaqis[index].qty <= 0) {
-          nawaqis.splice(index, 1);
-          alert(`تم خصم الكمية بالكامل، وتم إزالة "${name}" من النواقص.`);
-        } else {
-          alert(`تم الخصم. الكمية المتبقية من "${name}" في النواقص هي ${nawaqis[index].qty}.`);
-        }
-        localStorage.setItem('sh_nawaqis', JSON.stringify(nawaqis));
+      let idx = nawaqis.findIndex(i => i.name === name);
+      if (idx !== -1) {
+        nawaqis[idx].qty -= qty;
+        if (nawaqis[idx].qty <= 0) nawaqis.splice(idx, 1);
+        localStorage.setItem('sh_nawaqis_v3', JSON.stringify(nawaqis));
         renderNawaqis();
+        alert('تم الخصم من كشف النواقص بنجاح');
       } else {
-        alert('تم التسجيل. (الصنف لم يكن مسجلاً في النواقص مسبقاً)');
+        alert('تم التسجيل (الصنف غير موجود بالنواقص)');
       }
       document.getElementById('rName').value = ''; document.getElementById('rQty').value = '';
     }
 
-    // --- Clients & Staff ---
-    let clients = JSON.parse(localStorage.getItem('sh_clients2')) || [];
-    let staff = JSON.parse(localStorage.getItem('sh_staff2')) || [];
-
-    function addClient() {
-      let n = document.getElementById('cName').value; let p = document.getElementById('cPhone').value;
-      if(n) { clients.push({name:n, phone:p}); localStorage.setItem('sh_clients2', JSON.stringify(clients)); renderLists(); }
-    }
-    function addStaff() {
-      let n = document.getElementById('sName').value; let p = document.getElementById('sPhone').value;
-      if(n) { staff.push({name:n, phone:p}); localStorage.setItem('sh_staff2', JSON.stringify(staff)); renderLists(); }
-    }
-
-    function renderLists() {
-      document.getElementById('clientsList').innerHTML = clients.map(c => `<div class="list-item">👤 ${c.name} - ${c.phone}</div>`).join('');
-      document.getElementById('staffList').innerHTML = staff.map(s => `<div class="list-item">👨‍💼 ${s.name} - ${s.phone}</div>`).join('');
-    }
-
-    function copyBroadcastMsg(inputId) {
-      let msg = document.getElementById(inputId).value;
-      if(!msg) return alert('اكتب النص أولاً');
-      navigator.clipboard.writeText(msg).then(() => {
-        alert('تم نسخ النص! افتح الواتساب والصقه في قائمة "رسالة جماعية / Broadcast" لإرساله للجميع بأمان.');
-        window.location.href = "https://wa.me/";
-      });
-    }
-
     // Init
+    updateClientsUI();
     renderNawaqis();
-    renderLists();
   </script>
 </body>
 </html>
